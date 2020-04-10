@@ -34,7 +34,7 @@ const IndexPage = () => {
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker>(undefined)
 
   const allPostsQueryVars = {
-    ownerId: "0xC3c2e1Cf099Bc6e1fA94ce358562BCbD5cc59FE5".toLowerCase(),
+    ownerId: currentAccount.toLowercase(),
     metaId: "PXZw3LzsUoj0udlGg8TK",
     storeId: "0x5c27dde1e78382bb01859151efb4d50e2c55e633".toLowerCase()
   }
