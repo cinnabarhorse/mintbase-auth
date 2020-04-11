@@ -6,6 +6,7 @@ import { Speaker, BoostStatus } from "../types";
 import Lottie from 'react-lottie';
 import animationData from '../animations/rocket.json'
 import { remainingBoosts } from "../functions";
+import { themeColor } from "../theme";
 
 interface BoostModalProps {
     speakerObject: Speaker
@@ -92,15 +93,15 @@ const BoostModal = (props: BoostModalProps) => {
                     }
 
                     .boost {
-                        background:#FC2E53;
+                        background:${themeColor};
                         border:none;
                         color:white;
-                        transition: background 0.2s, color 0.2s;
+                        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+
                     }
 
                     .boost:hover {
-                        background:red;
-                        
+                        box-shadow:0 2px 4px 0 rgba(136,144,195,0.2), 0 5px 15px 0 rgba(37,44,97,0.3);
                     }
                 `}
             </style>

@@ -35,7 +35,8 @@ export default ({ children }) => (
         background-color: #1b9db7;
       }
       button:disabled {
-        background-color: #b5bebf;
+        background-color: gray;
+        background: gray;
       }
       button:focus {
         outline: none;

@@ -86,7 +86,7 @@ const CantBoostModal = () => {
 
                 <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <div style={{ fontSize: '21px', margin: 15 }}>
-                        You already boosted three speakers!
+                        You don't have any boosts!
                     </div>
 
                 </div>

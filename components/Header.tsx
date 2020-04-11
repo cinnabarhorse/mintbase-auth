@@ -6,6 +6,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import Dropdown from 'react-bootstrap/Dropdown'
 import { remainingBoosts } from '../functions'
 import { themeColor } from '../theme'
+import loadFirebase from '../firebase'
 
 
 
@@ -14,7 +15,57 @@ const Header = () => {
   const [{ globalWeb3, currentAccount, userInfo, tokens, tokenVotes, currentNetwork }, dispatch] = useStateValue()
 
 
-  console.log('tokenvotes:', tokenVotes)
+  if (typeof window !== 'undefined') {
+
+    //@ts-ignore
+    window.ethereum.on('accountsChanged', function (accounts) {
+      // Time to reload your interface with accounts[0]!
+      logout()
+    })
+
+    //@ts-ignore
+    window.ethereum.on('networkChanged', function (netId) {
+      // Time to reload your interface with netId
+      logout()
+    })
+
+
+  }
+
+
+  async function logout() {
+
+    const firebase = await loadFirebase()
+
+    try {
+
+      await firebase.auth().signOut()
+
+
+
+      dispatch({
+        type: "updateCurrentAccount",
+        currentAccount: undefined
+      })
+
+      dispatch({
+        type: "updateUserInfo",
+        userInfo: undefined
+      })
+
+      dispatch({
+        type: "updateTokenVotes",
+        tokenVotes: undefined
+      })
+
+    } catch (error) {
+      alert(error)
+    }
+
+
+
+
+  }
 
   return (
 
@@ -170,10 +221,10 @@ const Header = () => {
                   Boosts remaining: {remainingBoosts(tokenVotes)}
                 </Dropdown.Item>
                 <Dropdown.Item onClick={() => {
-                  dispatch({
-                    type: "updateCurrentAccount",
-                    currentAccount: undefined
-                  })
+                  logout()
+
+
+
                 }}>Logout</Dropdown.Item>
 
               </Dropdown.Menu>

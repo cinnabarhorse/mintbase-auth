@@ -1,5 +1,4 @@
 import Layout from '../components/Layout'
-import Header from '../components/Header'
 import { withApollo } from '../lib/apollo'
 import loadFirebase from '../firebase';
 import { useState, useEffect } from 'react';
@@ -7,17 +6,17 @@ import { snapshotToArray, remainingBoosts } from '../functions'
 import { useQuery } from '@apollo/react-hooks';
 import { HAS_THING_FROM_STORE } from '../queries';
 import { useStateValue } from '../State/globalState'
-import { Store, Thing, Speaker, UserInfo, Token, TokenId, Boost } from '../types'
+import { Speaker, TokenId, Boost } from '../types'
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import BoostModal from '../components/BoostModal';
 import AuthModal from '../components/AuthModal';
-import getWeb3 from '../web3/getWeb3';
 
-import Fortmatic from 'fortmatic'
-import Web3 from 'web3'
 import CantBoostModal from '../components/CantBoostModal';
+
+import Lottie from 'react-lottie';
+import animationData from '../animations/inifinite.json'
 
 
 
@@ -28,10 +27,21 @@ const IndexPage = () => {
   const [boostStatus, setBoostStatus] = useState<undefined | "boosting" | "complete">()
 
 
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice'
+    }
+  };
+
   //Necessary because of Firebase RT updates
   const [totalCount, setTotalCount] = useState(undefined)
 
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker>(undefined)
+  const [loadingSpeakers, setLoadingSpeakers] = useState(false)
 
   const allPostsQueryVars = {
     ownerId: currentAccount ? currentAccount.toLowerCase() : "",
@@ -99,6 +109,8 @@ const IndexPage = () => {
   }, [])
 
   async function loadSpeakers() {
+
+    setLoadingSpeakers(true)
     const firebase = await loadFirebase()
 
     firebase.firestore().collection("speakers")
@@ -114,9 +126,11 @@ const IndexPage = () => {
             type: 'updateSpeakers',
             speakers: snapshotToArray(snapshotArray)
           })
+          setLoadingSpeakers(false)
 
         }
         else {
+          setLoadingSpeakers(false)
           dispatch({
             type: 'updateSpeakers',
             speakers: []
@@ -126,7 +140,6 @@ const IndexPage = () => {
 
 
   }
-
 
   async function setUserVotes(tokens: TokenId[]) {
 
@@ -209,7 +222,7 @@ const IndexPage = () => {
     var remaining = remainingBoosts(tokenVotes)
 
     //Each user can only vote three times
-    if (remaining > 0) {
+    if (currentAccount && remaining > 0) {
       dispatch({
         type: "updateShowBoostModal",
         showBoostModal: true
@@ -219,7 +232,7 @@ const IndexPage = () => {
       setSelectedSpeaker(speaker)
     }
 
-    else if (remaining === 0) {
+    else if (currentAccount && remaining === 0) {
       dispatch({
         type: "updateShowCantBoostModal",
         showCantBoostModal: true
@@ -309,121 +322,6 @@ const IndexPage = () => {
 
   }
 
-  async function handleConnectFortmatic() {
-    let fm = new Fortmatic('pk_test_B086452452BE45F2');
-    //@ts-ignore
-    let web3 = new Web3(fm.getProvider());
-
-    const accounts = await web3.eth.getAccounts()
-
-    if (accounts && accounts.length > 0) {
-      console.log('account:', accounts[0])
-
-      await signInWithFirebase(accounts[0])
-
-      dispatch({
-        type: "updateCurrentAccount",
-        currentAccount: accounts[0]
-      })
-
-      dispatch({
-        type: "updateWeb3",
-        globalWeb3: web3
-      })
-
-      dispatch({
-        type: 'updateShowAuthModal',
-        showAuthModal: false
-      })
-    }
-
-  }
-
-  async function handleConnectMetamask() {
-    console.log('connect!')
-    const web3 = await getWeb3()
-
-    console.log('web3:', web3)
-    const accounts = await web3.web3.eth.getAccounts()
-
-    if (accounts.length > 0) {
-      await signInWithFirebase(accounts[0])
-
-      dispatch({
-        type: "updateWeb3",
-        globalWeb3: web3.web3
-      })
-
-      dispatch({
-        type: "updateShowAuthModal",
-        showAuthModal: false
-      })
-
-      dispatch({
-        type: 'updateCurrentAccount',
-        currentAccount: accounts[0]
-      })
-    }
-
-
-  }
-
-  async function signInWithFirebase(account: string) {
-    const firebase = await loadFirebase()
-    firebase.auth().signInAnonymously()
-      .then(async (result) => {
-
-        //Add anonymous user with wallet address as key
-
-        firebase.firestore().collection("users").doc(account).onSnapshot((snapshot) => {
-          if (snapshot.exists) {
-
-            console.log('data:', snapshot.data())
-
-            dispatch({
-              type: "updateUserInfo",
-              userInfo: {
-                id: account,
-                votes: snapshot.data()!.votes
-              }
-            })
-          }
-
-          //Doesn't exist, add new user
-          else {
-            firebase.firestore().collection("users").doc(account).set({
-              votes: []
-            })
-              .then(() => {
-                dispatch({
-                  type: "updateUserInfo",
-                  userInfo: {
-                    id: account,
-                    votes: []
-                  }
-                })
-              })
-
-
-
-            console.log('result:', result)
-          }
-
-        })
-
-        //Already exists, just load data
-
-
-      })
-      .catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-        console.log('error:', error)
-      });
-  }
-
   return (
     <Layout>
 
@@ -441,7 +339,14 @@ const IndexPage = () => {
         .allSpeakers {
           display:flex;
           flex-wrap:wrap;
+          width:100%;
         }
+
+        .lottieContainer {
+          margin-top:30px;
+          width:100%;
+        }
+
         .speakerContainer {
           width:100%;
           padding:30px;
@@ -535,9 +440,23 @@ const IndexPage = () => {
             Connect a wallet containing the DappCon 2020 NFT to boost your favorite speakers. Each NFT ticket can boost three times.
 </div>
 
+        </Row>
 
+        <Row>
           <div className="allSpeakers">
 
+
+            {!speakers && loadingSpeakers &&
+
+              <div className="lottieContainer">
+                <Lottie options={defaultOptions}
+                  height={120}
+                  width={270}
+                  isStopped={false}
+                  isPaused={false} />
+              </div>
+
+            }
 
             {speakers && speakers.map((speaker: Speaker, index) => {
 
@@ -565,7 +484,6 @@ const IndexPage = () => {
             })}
           </div>
 
-
         </Row>
       </Container>
 
@@ -580,9 +498,7 @@ const IndexPage = () => {
       }
 
       {showAuthModal &&
-        <AuthModal
-          handleConnectMetamask={() => handleConnectMetamask()}
-          handleConnectFortmatic={() => handleConnectFortmatic()} />
+        <AuthModal />
       }
 
       {showCantBoostModal &&
