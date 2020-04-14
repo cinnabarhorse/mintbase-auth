@@ -4,11 +4,12 @@ This demo was created by [@coderdannn](https://twitter.com/coderdannn)) for the 
 
 ## Steps to get started:
 
-Fork library
+```Fork library
 Run npm i
 Replace contents of firebase.js with your own
 Run yarn dev to start
 Deploy to Zeit Now or another hosting platform
+```
 
 
 
