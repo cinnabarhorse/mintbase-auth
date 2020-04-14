@@ -1,6 +1,6 @@
 # Mintbase DappCon 2020 Auth Demo
 
-This demo was created by [@coderdannn](https://twitter.com/coderdannn)) for the [DragonQuest Mintbase bounty](https://explorer.bounties.network/bounty/3942Ž)
+This demo was created by [@coderdannn](https://twitter.com/coderdannn) for the [DragonQuest Mintbase bounty](https://explorer.bounties.network/bounty/3942Ž)
 
 ## Steps to get started:
 
