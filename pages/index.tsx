@@ -49,7 +49,7 @@ const IndexPage = () => {
     storeId: "0x5c27dde1e78382bb01859151efb4d50e2c55e633".toLowerCase()
   }
 
-  const { loading, error, data, fetchMore, networkStatus } = useQuery(
+  const { error, data, } = useQuery(
     HAS_THING_FROM_STORE,
     {
       variables: allPostsQueryVars,
@@ -61,7 +61,6 @@ const IndexPage = () => {
     },
   )
 
-  console.log('current wallet:', currentAccount)
 
   console.log('error:', error)
   console.log('data:', data)
@@ -249,20 +248,12 @@ const IndexPage = () => {
 
   async function handleConfirmBoost() {
 
-    console.log('globalweb:', globalWeb3)
-
     const speaker: Speaker = selectedSpeaker
 
 
     globalWeb3.eth.personal.sign(`Sign this transaction to boost ${speaker.fname} ${speaker.lname} `, currentAccount, async function (err, res) {
       if (err) console.error(err);
-
-      console.log('res:', res)
-
-      console.log('tokens:', tokenVotes)
-
       const tokenId = tokenVotes[0]
-
       console.log('token id:', tokenId)
 
       setBoostStatus("boosting")
