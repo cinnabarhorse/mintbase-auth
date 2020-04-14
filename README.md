@@ -6,7 +6,7 @@ This demo was created by [@coderdannn](https://twitter.com/coderdannn) for the [
 
 ```Fork library
 Run npm i
-Create .env and add in the variables for firebase.js 
+Create .env and add in the variables for firebase.js and include in build, OR add environment variables to Now
 Run yarn dev to start
 Deploy to Zeit Now or another hosting platform
 ```
