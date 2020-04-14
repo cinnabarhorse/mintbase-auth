@@ -6,7 +6,7 @@ This demo was created by [@coderdannn](https://twitter.com/coderdannn) for the [
 
 ```Fork library
 Run npm i
-Replace contents of firebase.js with your own
+Create .env and add in the variables for firebase.js 
 Run yarn dev to start
 Deploy to Zeit Now or another hosting platform
 ```
