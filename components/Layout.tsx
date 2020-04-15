@@ -12,8 +12,16 @@ export default ({ children }) => (
         margin: 0;
       }
       a {
-        color: #22bad9;
+        color: black;
+        transition:color 0.2s;
+        text-decoration:none;
       }
+
+      a:hover {
+        color:white;
+        text-decoration:none;
+      }
+
       p {
         font-size: 14px;
         line-height: 24px;
@@ -46,6 +54,8 @@ export default ({ children }) => (
         border: solid 5px black;
         border-radius:30px;
       }
+
+
 
 
     `}</style>

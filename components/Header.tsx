@@ -7,6 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import { remainingBoosts } from '../functions'
 import { themeColor } from '../theme'
 import loadFirebase from '../firebase'
+import { DappCon2020 } from '../icons'
 
 
 
@@ -99,6 +100,7 @@ const Header = () => {
 
       .navInnerContainer {
         display:flex;
+        align-items:center;
         flex-direction:row;
         width:100%;
        height:100px;
@@ -158,9 +160,7 @@ const Header = () => {
           flex-direction:row;
           align-items:flex-start;
         }
-        .headerTitle {
-        
-        }
+      
 
         .connectButton {
           font-size:14px;
@@ -179,7 +179,7 @@ const Header = () => {
 
       @media screen and (max-width:576px) {
         .headerTitle {
-          font-size:21px;
+          font-size:18px;
         }
       
       }
@@ -187,6 +187,11 @@ const Header = () => {
     `}</style>
 
       <div className="navInnerContainer">
+
+        <a href="https://dappcon.io" target="_blank
+        " style={{ marginRight: 20 }} >
+          {DappCon2020()}
+        </a>
 
 
         <div className="textContainer">

@@ -17,6 +17,7 @@ import CantBoostModal from '../components/CantBoostModal';
 
 import Lottie from 'react-lottie';
 import animationData from '../animations/inifinite.json'
+import { MintbaseIcon } from '../icons';
 
 
 
@@ -321,10 +322,20 @@ const IndexPage = () => {
 
         .headerDesc {
        
+          width:100%;
+          padding:25px;
+          text-align:center;
           font-size:21px;
           color:black;
-          width:70%;
           margin:15px;
+        }
+
+        .poweredBy {
+          text-align:center;
+          width:100%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
         }
 
         .allSpeakers {
@@ -403,6 +414,25 @@ const IndexPage = () => {
           color:white;
         }
 
+        footer {
+          height:60px;
+          background:black;
+          color:white;
+          display:flex;
+          justify-content:center;
+          align-items:center;
+        }
+
+        .footerLink {
+          margin-left: 10px;
+          color: white;
+          transition:color 0.2s;
+        }
+
+        .footerLink:hover {
+          color: #22bad9;
+        }
+
         @media screen and (max-width:768px) {
 
           .headerDesc {
@@ -430,6 +460,12 @@ const IndexPage = () => {
           <div className="headerDesc">
             Connect a wallet containing the DappCon 2020 NFT to boost your favorite speakers. Each NFT ticket can boost three times.
 </div>
+
+          <div className="poweredBy">
+            <span style={{ marginRight: 10 }}>{MintbaseIcon(30)}</span>
+            <span>Powered by <a target="_blank" href="https://mintbase.io">Mintbase</a></span>
+
+          </div>
 
         </Row>
 
@@ -496,6 +532,10 @@ const IndexPage = () => {
         <CantBoostModal />
       }
 
+
+      <footer>
+        Created with ❤️ by <a target="_blank" className="footerLink" href="https://twitter.com/@coderdannn">@coderdannn</a>
+      </footer>
 
     </Layout>
   )
