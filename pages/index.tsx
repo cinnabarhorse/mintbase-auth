@@ -42,7 +42,7 @@ const IndexPage = () => {
   const [totalCount, setTotalCount] = useState(undefined)
 
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker>(undefined)
-  const [loadingSpeakers, setLoadingSpeakers] = useState(false)
+  const [loadingSpeakers, setLoadingSpeakers] = useState(true)
 
   const allPostsQueryVars = {
     ownerId: currentAccount ? currentAccount.toLowerCase() : "",
@@ -110,7 +110,7 @@ const IndexPage = () => {
 
   async function loadSpeakers() {
 
-    setLoadingSpeakers(true)
+
     const firebase = await loadFirebase()
 
     firebase.firestore().collection("speakers")
@@ -346,6 +346,7 @@ const IndexPage = () => {
 
         .lottieContainer {
           margin-top:30px;
+          height:1000px;
           width:100%;
         }
 
@@ -482,7 +483,6 @@ const IndexPage = () => {
                   isStopped={false}
                   isPaused={false} />
               </div>
-
             }
 
             {speakers && speakers.map((speaker: Speaker, index) => {
