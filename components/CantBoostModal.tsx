@@ -15,6 +15,31 @@ const CantBoostModal = () => {
             centered
         >
 
+            <Modal.Header closeButton onClick={() => dispatch({
+                type: "updateShowCantBoostModal",
+                showCantBoostModal: false
+            })}>
+                <Modal.Title style={{ display: 'flex', flex: 1, justifyContent: 'center', fontWeight: 800, textAlign: 'center' }} id="contained-modal-title-vcenter">
+                    Uh oh! 😱
+                </Modal.Title>
+
+            </Modal.Header>
+
+            <Modal.Body>
+
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ fontSize: '21px', margin: 15 }}>
+                        You don't have any boosts!
+                    </div>
+
+                </div>
+
+
+
+
+            </Modal.Body>
+
+
             <style jsx>
                 {`
                     .bodyContainer {
@@ -71,30 +96,6 @@ const CantBoostModal = () => {
             </style>
 
 
-
-            <Modal.Header closeButton onClick={() => dispatch({
-                type: "updateShowCantBoostModal",
-                showCantBoostModal: false
-            })}>
-                <Modal.Title style={{ display: 'flex', flex: 1, justifyContent: 'center', fontWeight: 800, textAlign: 'center' }} id="contained-modal-title-vcenter">
-                    Uh oh! 😱
-                </Modal.Title>
-
-            </Modal.Header>
-
-            <Modal.Body>
-
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                    <div style={{ fontSize: '21px', margin: 15 }}>
-                        You don't have any boosts!
-                    </div>
-
-                </div>
-
-
-
-
-            </Modal.Body>
 
         </Modal>
     );

@@ -13,7 +13,7 @@ import { DappCon2020 } from '../icons'
 
 const Header = () => {
 
-  const [{ globalWeb3, currentAccount, userInfo, tokens, tokenVotes, currentNetwork }, dispatch] = useStateValue()
+  const [{ currentAccount, userInfo, tokens, tokenVotes }, dispatch] = useStateValue()
 
 
   if (typeof window !== 'undefined') {

@@ -27,8 +27,6 @@ const IndexPage = () => {
 
   const [boostStatus, setBoostStatus] = useState<undefined | "boosting" | "complete">()
 
-
-
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -41,9 +39,12 @@ const IndexPage = () => {
   //Necessary because of Firebase RT updates
   const [totalCount, setTotalCount] = useState(undefined)
 
+  //Current speaker object
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker>(undefined)
   const [loadingSpeakers, setLoadingSpeakers] = useState(true)
 
+
+  //The variables for our store on Mintbase
   const allPostsQueryVars = {
     ownerId: currentAccount ? currentAccount.toLowerCase() : "",
     metaId: "PXZw3LzsUoj0udlGg8TK",
@@ -55,23 +56,18 @@ const IndexPage = () => {
     {
       variables: allPostsQueryVars,
       skip: !currentAccount ? true : false,
-      // Setting this value to true will make the component rerender when
-      // the "networkStatus" changes, so we are able to know if it is fetching
-      // more data
       notifyOnNetworkStatusChange: true,
     },
   )
 
-
-  console.log('error:', error)
-  console.log('data:', data)
-
-
   /*
 
-  1. User signs in with wallet
-  2. useQuery fetches all tokens from wallet, extracts ids and puts into Tokens array
-  3. For each token, fetch all the votes associated with that tokenId from db and store in votes array.
+  HOW THIS APP WORKS
+
+  1. User signs in using Metamask or Fortmatic
+  2. useQuery fetches all tokens from wallet using TheGraph
+  3. useEffect extracts ids and puts 3 votes into userVotes array
+  4. For each token, fetch all the votes associated with that tokenId from db and store in votes array.
   4. Iterate through votes array and remove items from Tokens array to create tokenVotes array — should be left with an array of all remaining votes
   5. Use tokenVotes[0] to set tokenId of boost object.
   6. After boosting, refetch votes object and repeat cycle. 
@@ -108,6 +104,10 @@ const IndexPage = () => {
     loadSpeakers()
   }, [])
 
+
+  /*
+  Loads all speakers from Firebase
+  */
   async function loadSpeakers() {
 
 
@@ -117,8 +117,6 @@ const IndexPage = () => {
       .orderBy("score", "desc")
       .limit(6)
       .onSnapshot((snapshotArray) => {
-
-        console.log('snapshot:', snapshotArray)
 
         if (!snapshotArray.empty) {
 
@@ -141,6 +139,9 @@ const IndexPage = () => {
 
   }
 
+  /*
+  First adds three votes per token owned by user, then removes after loading all votes from Firebase backend. 
+  */
   async function setUserVotes(tokens: TokenId[]) {
 
     var tokensEnumerated = []
@@ -151,8 +152,6 @@ const IndexPage = () => {
       tokensEnumerated.push(token.id)
       tokensEnumerated.push(token.id)
     });
-
-    console.log('tokens enumerated:', tokensEnumerated)
 
     const votes = await loadVotesForTokens(tokens)
 
@@ -178,7 +177,6 @@ const IndexPage = () => {
     const firebase = await loadFirebase()
     const allVotes = await Promise.all((tokens.map(async (token: TokenId) => {
 
-      console.log('token:', token)
       return await firebase.firestore().collection("boosts").where("tokenId", "==", token.id).get()
         .then((snapshot) => {
           return snapshotToArray(snapshot)
@@ -190,7 +188,6 @@ const IndexPage = () => {
     })))
 
     //Enumerate all the votes into one array
-
     var allVotesEnumerated = []
 
     allVotes.forEach((boostArray: Boost[]) => {
@@ -199,29 +196,20 @@ const IndexPage = () => {
       });
     });
 
-    /*   dispatch({
-         type: "updateTokenVotes",
-         tokenVotes: allVotesEnumerated
-       })
-       */
-
-
     return allVotesEnumerated
 
-    console.log('all votes:', allVotesEnumerated)
+
 
   }
 
 
-  const boostIcons = [
-    "⚡", "🚀", "🦄", "👍", "🔥", "🌶"
-  ]
-
+  /*
+  Verify that the user can vote. 
+  */
   function handleBoost(speaker: Speaker) {
 
     var remaining = remainingBoosts(tokenVotes)
 
-    //Each user can only vote three times
     if (currentAccount && remaining > 0) {
       dispatch({
         type: "updateShowBoostModal",
@@ -247,6 +235,9 @@ const IndexPage = () => {
     }
   }
 
+  /*
+First ask user to sign transaction using wallet, then add to db. 
+  */
   async function handleConfirmBoost() {
 
     const speaker: Speaker = selectedSpeaker
@@ -268,12 +259,11 @@ const IndexPage = () => {
 
       const newVotes = [...userInfo.votes, speaker.key]
 
+      //Use batch transaction to update users, speakers, and boosts atomically
       const batch = firebase.firestore().batch()
-
       const userRef = firebase.firestore().collection("users").doc(currentAccount)
       const speakerRef = firebase.firestore().collection("speakers").doc(speaker.key)
       const boostRef = firebase.firestore().collection("boosts").doc()
-
       const increment = firebase.firestore.FieldValue.increment(1)
 
       batch.update(userRef, {
@@ -294,9 +284,12 @@ const IndexPage = () => {
 
 
 
+      /*
+      Set a 1.5s timeout to make user feel like something is happening.
+      */
       setTimeout(() => {
         batch.commit()
-          .then((result) => {
+          .then(() => {
 
             setUserVotes(tokens)
             setTotalCount(speaker.score + 1)
@@ -316,6 +309,85 @@ const IndexPage = () => {
 
   return (
     <Layout>
+      <Container>
+        <Row>
+          <div className="headerDesc">
+            Connect a wallet containing the DappCon 2020 NFT to boost your favorite speakers. Each NFT ticket can boost three times.
+          </div>
+
+          <div className="poweredBy">
+            <span style={{ marginRight: 10 }}>{MintbaseIcon(30)}</span>
+            <span>Powered by <a target="_blank" href="https://mintbase.io">Mintbase</a></span>
+
+          </div>
+        </Row>
+
+        <Row>
+          <div className="allSpeakers">
+
+            {!speakers && loadingSpeakers &&
+
+              <div className="lottieContainer">
+                <Lottie options={defaultOptions}
+                  height={120}
+                  width={270}
+                  isStopped={false}
+                  isPaused={false} />
+              </div>
+            }
+
+            {speakers && speakers.map((speaker: Speaker, index) => {
+
+              return (
+                <Col key={index} xl={4} lg={4} md={6} sm={6} xs={12}>
+                  <div className="speakerContainer">
+                    <span className="speakerFName">{speaker.fname} </span>
+                    <span className="speakerLName">{speaker.lname}</span>
+                    <img className="speakerPic" src={speaker.profilePic} />
+
+                    <div className="boostContainer">
+                      <div className="score">
+                        {speaker.score}
+                      </div>
+
+
+                      <button onClick={() => handleBoost(speaker)} className="boostButton">🚀 Boost</button>
+
+                    </div>
+                  </div>
+
+                </Col>
+
+              )
+            })}
+          </div>
+
+        </Row>
+      </Container>
+
+      {showBoostModal && selectedSpeaker &&
+        <BoostModal
+          boostStatus={boostStatus}
+          handleConfirmBoost={() => handleConfirmBoost()}
+          speakerObject={selectedSpeaker}
+          total={totalCount ? totalCount : selectedSpeaker.score}
+
+        />
+      }
+
+      {showAuthModal &&
+        <AuthModal />
+      }
+
+      {showCantBoostModal &&
+        <CantBoostModal />
+      }
+
+
+      <footer>
+        Created with ❤️ by <a target="_blank" className="footerLink" href="https://twitter.com/@coderdannn">@coderdannn</a>
+      </footer>
+
 
       <style jsx>
         {`
@@ -451,91 +523,6 @@ const IndexPage = () => {
       `}
       </style>
 
-      {/*} <Header /> */}
-
-      <Container>
-
-        <Row>
-
-
-          <div className="headerDesc">
-            Connect a wallet containing the DappCon 2020 NFT to boost your favorite speakers. Each NFT ticket can boost three times.
-</div>
-
-          <div className="poweredBy">
-            <span style={{ marginRight: 10 }}>{MintbaseIcon(30)}</span>
-            <span>Powered by <a target="_blank" href="https://mintbase.io">Mintbase</a></span>
-
-          </div>
-
-        </Row>
-
-        <Row>
-          <div className="allSpeakers">
-
-
-            {!speakers && loadingSpeakers &&
-
-              <div className="lottieContainer">
-                <Lottie options={defaultOptions}
-                  height={120}
-                  width={270}
-                  isStopped={false}
-                  isPaused={false} />
-              </div>
-            }
-
-            {speakers && speakers.map((speaker: Speaker, index) => {
-
-              return (
-                <Col xl={4} lg={4} md={6} sm={6} xs={12}>
-                  <div className="speakerContainer">
-                    <span className="speakerFName">{speaker.fname} </span>
-                    <span className="speakerLName">{speaker.lname}</span>
-                    <img className="speakerPic" src={speaker.profilePic} />
-
-                    <div className="boostContainer">
-                      <div className="score">
-                        {speaker.score}
-                      </div>
-
-
-                      <button onClick={() => handleBoost(speaker)} className="boostButton">{boostIcons[1]} Boost</button>
-
-                    </div>
-                  </div>
-
-                </Col>
-
-              )
-            })}
-          </div>
-
-        </Row>
-      </Container>
-
-      {showBoostModal && selectedSpeaker &&
-        <BoostModal
-          boostStatus={boostStatus}
-          handleConfirmBoost={() => handleConfirmBoost()}
-          speakerObject={selectedSpeaker}
-          total={totalCount ? totalCount : selectedSpeaker.score}
-
-        />
-      }
-
-      {showAuthModal &&
-        <AuthModal />
-      }
-
-      {showCantBoostModal &&
-        <CantBoostModal />
-      }
-
-
-      <footer>
-        Created with ❤️ by <a target="_blank" className="footerLink" href="https://twitter.com/@coderdannn">@coderdannn</a>
-      </footer>
 
     </Layout>
   )

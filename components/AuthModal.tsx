@@ -1,44 +1,34 @@
 import React, { useState } from "react";
 import Modal from 'react-bootstrap/Modal'
 import { useStateValue } from '../State/globalState'
-
 import getWeb3 from '../web3/getWeb3';
-
 import Fortmatic from 'fortmatic'
 import Web3 from 'web3'
 import loadFirebase from "../firebase";
 
 
-interface AuthModalProps {
-
-}
-
-
-
-const AuthModal = (props: AuthModalProps) => {
+const AuthModal = () => {
 
     const [{ showAuthModal, }, dispatch] = useStateValue()
-
     const [loadingFortmatic, setLoadingFortmatic] = useState(false)
 
 
-
+    /*
+    Connects Fortmatic wallet
+    */
     async function handleConnectFortmatic() {
 
         setLoadingFortmatic(true)
 
         try {
-            let fm = new Fortmatic('pk_test_B086452452BE45F2');
+            let fm = new Fortmatic(process.env.FORTMATIC_KEY);
             //@ts-ignore
             let web3 = new Web3(fm.getProvider());
 
             const accounts = await web3.eth.getAccounts()
 
 
-
             if (accounts && accounts.length > 0) {
-                console.log('account:', accounts[0])
-
                 await signInWithFirebase(accounts[0])
 
                 dispatch({
@@ -70,11 +60,11 @@ const AuthModal = (props: AuthModalProps) => {
     }
 
 
+    /*
+Connect with Metamask
+    */
     async function handleConnectMetamask() {
-        console.log('connect!')
         const web3 = await getWeb3()
-
-        console.log('web3:', web3)
         const accounts = await web3.web3.eth.getAccounts()
 
         if (accounts.length > 0) {
@@ -100,18 +90,17 @@ const AuthModal = (props: AuthModalProps) => {
     }
 
 
+    /*
+    Uses Firebase anonymous login to sign in
+    */
     async function signInWithFirebase(account: string) {
         const firebase = await loadFirebase()
         firebase.auth().signInAnonymously()
             .then(async (result) => {
 
-                //Add anonymous user with wallet address as key
-
+                //Add anonymous user with wallet address as doc ID
                 firebase.firestore().collection("users").doc(account).onSnapshot((snapshot) => {
                     if (snapshot.exists) {
-
-                        console.log('data:', snapshot.data())
-
                         dispatch({
                             type: "updateUserInfo",
                             userInfo: {
@@ -148,11 +137,8 @@ const AuthModal = (props: AuthModalProps) => {
 
             })
             .catch(function (error) {
-                // Handle Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // ...
-                console.log('error:', error)
+
+                console.log('error:', error.message)
             });
     }
 
@@ -240,12 +226,18 @@ const AuthModal = (props: AuthModalProps) => {
 
 
                 <div className="buttonContainer">
-                    <button onClick={() => {
-                        handleConnectMetamask()
-                    }} className="notNow">Metamask</button>
-                    <button disabled={loadingFortmatic} onClick={() => {
-                        handleConnectFortmatic()
-                    }} className="boost">{loadingFortmatic ? "Loading..." : "Fortmatic"}</button>
+                    <button
+                        onClick={() => handleConnectMetamask()}
+                        className="notNow">
+                        Metamask
+                        </button>
+
+                    <button
+                        disabled={loadingFortmatic}
+                        onClick={() => handleConnectFortmatic()}
+                        className="boost">
+                        {loadingFortmatic ? "Loading..." : "Fortmatic"}
+                    </button>
                 </div>
 
             </Modal.Body>

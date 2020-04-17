@@ -4,10 +4,7 @@ import App from 'next/app'
 import { GlobalState } from '../State/globalState'
 import { initialState } from '../State/initialState'
 import { reducer } from '../State/reducers'
-
-
 import Head from 'next/head'
-
 import Layout from '../components/Layout'
 import Header from '../components/Header'
 

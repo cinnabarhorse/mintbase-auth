@@ -8,6 +8,7 @@ module.exports = {
         FIREBASE_MESSAGINGSENDERID: process.env.FIREBASE_MESSAGINGSENDERID,
         FIREBASE_APPID: process.env.FIREBASE_APPID,
         FIREBASE_MEASUREMENTID: process.env.FIREBASE_MEASUREMENTID,
+        FORTMATIC_KEY: process.env.FORTMATIC_KEY
     }
 }
 
