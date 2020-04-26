@@ -47,8 +47,8 @@ const IndexPage = () => {
   //The variables for our store on Mintbase
   const allPostsQueryVars = {
     ownerId: currentAccount ? currentAccount.toLowerCase() : "",
-    metaId: "PXZw3LzsUoj0udlGg8TK",
-    storeId: "0x5c27dde1e78382bb01859151efb4d50e2c55e633".toLowerCase()
+    metaId: "m4NDqqsZP8iE2M1csDhe",
+    storeId: "0x965c51e9368cff73f6b374debadce4162f73e99c".toLowerCase()
   }
 
   const { error, data, } = useQuery(
@@ -528,5 +528,6 @@ First ask user to sign transaction using wallet, then add to db.
   )
 
 }
+
 
 export default withApollo({ ssr: true })(IndexPage)

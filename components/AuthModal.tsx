@@ -12,6 +12,29 @@ const AuthModal = () => {
     const [{ showAuthModal, }, dispatch] = useStateValue()
     const [loadingFortmatic, setLoadingFortmatic] = useState(false)
 
+    function updateState(web3, address, network) {
+        dispatch({
+            type: "updateCurrentAccount",
+            currentAccount: address
+        })
+
+
+        dispatch({
+            type: 'updateCurrentNetwork',
+            currentNetwork: network
+        })
+
+        dispatch({
+            type: "updateWeb3",
+            globalWeb3: web3
+        })
+
+        dispatch({
+            type: 'updateShowAuthModal',
+            showAuthModal: false
+        })
+
+    }
 
     /*
     Connects Fortmatic wallet
@@ -21,30 +44,19 @@ const AuthModal = () => {
         setLoadingFortmatic(true)
 
         try {
-            let fm = new Fortmatic(process.env.FORTMATIC_KEY);
+            let fm = new Fortmatic(process.env.FORTMATIC_KEY_PROD);
             //@ts-ignore
             let web3 = new Web3(fm.getProvider());
 
+            console.log('webb3:', web3)
+
             const accounts = await web3.eth.getAccounts()
+            const network = await web3.eth.net.getNetworkType()
 
 
             if (accounts && accounts.length > 0) {
                 await signInWithFirebase(accounts[0])
-
-                dispatch({
-                    type: "updateCurrentAccount",
-                    currentAccount: accounts[0]
-                })
-
-                dispatch({
-                    type: "updateWeb3",
-                    globalWeb3: web3
-                })
-
-                dispatch({
-                    type: 'updateShowAuthModal',
-                    showAuthModal: false
-                })
+                updateState(web3, accounts[0], network)
 
                 setLoadingFortmatic(false)
             }
@@ -66,24 +78,11 @@ Connect with Metamask
     async function handleConnectMetamask() {
         const web3 = await getWeb3()
         const accounts = await web3.web3.eth.getAccounts()
+        const network = await web3.web3.eth.net.getNetworkType()
 
         if (accounts.length > 0) {
             await signInWithFirebase(accounts[0])
-
-            dispatch({
-                type: "updateWeb3",
-                globalWeb3: web3.web3
-            })
-
-            dispatch({
-                type: "updateShowAuthModal",
-                showAuthModal: false
-            })
-
-            dispatch({
-                type: 'updateCurrentAccount',
-                currentAccount: accounts[0]
-            })
+            updateState(web3.web3, accounts[0], network)
         }
 
 

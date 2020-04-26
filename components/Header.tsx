@@ -13,7 +13,7 @@ import { DappCon2020 } from '../icons'
 
 const Header = () => {
 
-  const [{ currentAccount, userInfo, tokens, tokenVotes }, dispatch] = useStateValue()
+  const [{ currentAccount, currentNetwork, userInfo, tokens, tokenVotes }, dispatch] = useStateValue()
 
 
   if (typeof window !== 'undefined') {
@@ -222,9 +222,16 @@ const Header = () => {
                   Tokens: {tokens ? tokens.length : 0}
                 </Dropdown.Item>
 
+
                 <Dropdown.Item>
                   Boosts remaining: {remainingBoosts(tokenVotes)}
                 </Dropdown.Item>
+
+
+                <Dropdown.Item>
+                  Network: {currentNetwork ? currentNetwork : "Loading..."}
+                </Dropdown.Item>
+
                 <Dropdown.Item onClick={() => {
                   logout()
 
