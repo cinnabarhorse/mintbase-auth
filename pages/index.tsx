@@ -18,6 +18,7 @@ import CantBoostModal from '../components/CantBoostModal';
 import Lottie from 'react-lottie';
 import animationData from '../animations/inifinite.json'
 import { MintbaseIcon } from '../icons';
+import NextReusableHead from '../components/NextReusableHead';
 
 
 
@@ -309,6 +310,15 @@ First ask user to sign transaction using wallet, then add to db.
 
   return (
     <Layout>
+
+      <NextReusableHead
+        title="DappCon 2020 Vote Demo"
+        description="DappCon2020 Vote Demo -- powered by Mintbase. Created by @coderdannn"
+        siteName="DappCon 2020 Vote Demo"
+        url="https://mintbase-auth.now.sh"
+        faviconPath="/favicon.ico"
+      />
+
       <Container>
         <Row>
 

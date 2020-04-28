@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useStateValue } from '../State/globalState'
 
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
@@ -16,22 +16,25 @@ const Header = () => {
   const [{ currentAccount, currentNetwork, userInfo, tokens, tokenVotes }, dispatch] = useStateValue()
 
 
-  if (typeof window !== 'undefined') {
+  useEffect(() => {
 
     //@ts-ignore
-    window.ethereum.on('accountsChanged', function (accounts) {
-      // Time to reload your interface with accounts[0]!
-      logout()
-    })
+    if (window.ethereum) {
+      //@ts-ignore
+      window.ethereum.on('accountsChanged', function (accounts) {
+        // Time to reload your interface with accounts[0]!
+        logout()
+      })
 
+      //@ts-ignore
+      window.ethereum.on('networkChanged', function (netId) {
+        // Time to reload your interface with netId
+        logout()
+      })
+    }
     //@ts-ignore
-    window.ethereum.on('networkChanged', function (netId) {
-      // Time to reload your interface with netId
-      logout()
-    })
 
-
-  }
+  }, [])
 
 
   async function logout() {
