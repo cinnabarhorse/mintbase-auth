@@ -311,15 +311,24 @@ First ask user to sign transaction using wallet, then add to db.
     <Layout>
       <Container>
         <Row>
-          <div className="headerDesc">
-            Connect a wallet containing the DappCon 2020 NFT to boost your favorite speakers. Each NFT ticket can boost three times.
+
+          <Col>
+
+
+            <div className="testing">
+              For testing only
           </div>
 
-          <div className="poweredBy">
-            <span style={{ marginRight: 10 }}>{MintbaseIcon(30)}</span>
-            <span>Powered by <a target="_blank" href="https://mintbase.io">Mintbase</a></span>
-
+            <div className="headerDesc">
+              Connect a wallet containing the DappCon 2020 NFT to boost your favorite speakers. Each NFT ticket can boost three times.
           </div>
+
+            <div className="poweredBy">
+              <span style={{ marginRight: 10 }}>{MintbaseIcon(30)}</span>
+              <span>Powered by <a target="_blank" href="https://mintbase.io">Mintbase</a></span>
+
+            </div>
+          </Col>
         </Row>
 
         <Row>
@@ -392,6 +401,13 @@ First ask user to sign transaction using wallet, then add to db.
       <style jsx>
         {`
 
+        .testing {
+          color:#C2FF48;
+          font-size:21px;
+          text-transform:uppercase;
+          line-spacing:1.2px;
+        }
+
         .headerDesc {
        
           width:100%;
@@ -399,7 +415,8 @@ First ask user to sign transaction using wallet, then add to db.
           text-align:center;
           font-size:21px;
           color:black;
-          margin:15px;
+          margin-top:15px;
+          margin-bottom:15px;
         }
 
         .poweredBy {
